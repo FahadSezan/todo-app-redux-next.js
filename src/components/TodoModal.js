@@ -10,6 +10,7 @@ import Button from './Button';
 function TodoModal({ type, modalOpen, setModalOpen, todo }) {
   // state
   const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
   const [status, setStatus] = useState('incomplete');
   // create dispatch method
   const dispatch = useDispatch();
@@ -17,9 +18,11 @@ function TodoModal({ type, modalOpen, setModalOpen, todo }) {
   useEffect(() => {
     if (type === 'update' && todo) {
       setTitle(todo.title);
+      setDescription(todo.description);
       setStatus(todo.status);
     } else {
       setTitle('');
+      setDescription('');
       setStatus('incomplete');
     }
   }, [type, todo, modalOpen]);
@@ -27,16 +30,17 @@ function TodoModal({ type, modalOpen, setModalOpen, todo }) {
   // function state
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (title === '') {
-      toast.error('Please enter a title');
+    if (title && description === '') {
+      toast.error('Please enter a title and description');
       return;
     }
-    if (title && status) {
+    if (title && description && status) {
       if (type === 'add') {
         dispatch(
           addTodo({
             id: uuid(),
             title,
+            description,
             status,
             time: new Date().toLocaleString(),
           })
@@ -44,8 +48,12 @@ function TodoModal({ type, modalOpen, setModalOpen, todo }) {
         toast.success('Task added successfully');
       }
       if (type === 'update') {
-        if (todo.title !== title || todo.status !== status) {
-          dispatch(updateTodo({ ...todo, title, status }));
+        if (
+          todo.title !== title ||
+          todo.description !== description ||
+          todo.status !== status
+        ) {
+          dispatch(updateTodo({ ...todo, title, description, status }));
           toast.success('Task Updated successfully');
         } else {
           toast.error('No changes made');
@@ -83,6 +91,19 @@ function TodoModal({ type, modalOpen, setModalOpen, todo }) {
                 placeholder="add your task"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="description" className="form-label">
+                Description
+              </label>
+              <input
+                type="text"
+                className="form-control form-control-lg shadow-none border-0 py-4 fs-4"
+                id="description"
+                placeholder="Write something"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
               />
             </div>
             <label htmlFor="status" className="form-label">

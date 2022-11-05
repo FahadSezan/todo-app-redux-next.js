@@ -55,6 +55,7 @@ function TodoItem({ todo }) {
             >
               {todo.title}
             </p>
+            <p className={getClasses([styles.todoText])}>{todo.description}</p>
             <p className={styles.time}>
               {format(new Date(todo.time), 'p, MM/dd/yyyy')}
             </p>
